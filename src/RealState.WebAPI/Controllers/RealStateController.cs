@@ -5,7 +5,7 @@ using RealState.Domain;
 namespace RealState.WebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    //[Route("[controller]")]
     public class RealStateController : ControllerBase
     {
         private readonly ILogger<RealStateController> _logger;
@@ -17,14 +17,14 @@ namespace RealState.WebAPI.Controllers
             _propertyService = propertyService;
         }
 
-        [HttpGet("properties", Name = "GetAllProperties")]
+        [HttpGet("imovel", Name = "GetAllProperties")]
         public ActionResult<IEnumerable<Property>> GetProperties()
         {
             var allProperties = _propertyService.GetAllProperties();
             return Ok(allProperties);
         }
 
-        [HttpGet("properties/{id}", Name = "GetPropertyById")]
+        [HttpGet("imovel/{id}", Name = "GetPropertyById")]
         public ActionResult<Property> GetPropertyById(int id)
         {
             if (_propertyService.GetPropertyById(id) is not Property property)
@@ -32,7 +32,7 @@ namespace RealState.WebAPI.Controllers
             return Ok(property);
         }
 
-        [HttpPost("properties", Name = "AddProperty")]
+        [HttpPost("imovel", Name = "AddProperty")]
         public ActionResult<int> AddProperty([FromForm] Property property)
         {
             if (!ModelState.IsValid)
@@ -41,7 +41,7 @@ namespace RealState.WebAPI.Controllers
             return Ok(newId);
         }
 
-        [HttpDelete("properties/{id}", Name = "DeleteProperty")]
+        [HttpDelete("imovel/{id}", Name = "DeleteProperty")]
         public IActionResult DeleteProperty(int id)
         {
             try
@@ -55,7 +55,7 @@ namespace RealState.WebAPI.Controllers
             }
         }
         
-        [HttpPut("properties/{id}", Name = "UpdateProperty")]
+        [HttpPut("imovel/{id}", Name = "UpdateProperty")]
         public ActionResult UpdateProperty(int id, [FromForm] Property viewProperty)
         {
             try
