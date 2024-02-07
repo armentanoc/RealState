@@ -4,7 +4,7 @@ Bem-vindo à RealState Web API, uma plataforma para gerenciar listagens de propr
 
 ## Visão Geral
 
-A RealState Web API é um serviço RESTful construído com C# e ASP.NET Core. Ele fornece funcionalidades para gerenciar uma lista de propriedades, tornando-o um backend ideal para aplicações imobiliárias.
+A RealState Web API é um serviço RESTful construído com C# e ASP.NET Core. Ele fornece funcionalidades para gerenciar uma lista de propriedades, tornando-o um backend ideal para aplicações imobiliárias, utilizando conceitos como Arquitetura Limpa, Solid e DDD (Domain Driven Design). 
 
 ## Recursos
 
