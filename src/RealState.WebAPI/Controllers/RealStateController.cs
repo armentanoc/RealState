@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using RealState.Application;
 using RealState.Domain;
 using RealState.WebAPI.Requests;
+using RealState.WebAPI.Requests.RealState.WebAPI.Requests;
 using System.ComponentModel.DataAnnotations;
 
 namespace RealState.WebAPI.Controllers
@@ -34,15 +35,45 @@ namespace RealState.WebAPI.Controllers
         }
 
         [HttpPost("imovel", Name = "AddProperty")]
-        public ActionResult<int> AddProperty([FromForm][Required] RequiredPropertyRequest requestProperty)
+        public async Task<ActionResult<int>> AddProperty([FromForm][Required] string cep)
         {
-            var property = ParseToProperty(requestProperty);
+            var addressResponse = await GetAddressDetailsAsync(cep);
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (addressResponse.IsSuccessStatusCode)
+            {
+                var addressDetails = await addressResponse.Content.ReadFromJsonAsync<AddressDetailsResponse>();
 
-            var newId = _propertyService.AddProperty(property);
-            return Created($"imovel/{property.Id}", property);
+                // Display the address details to the user
+                Console.WriteLine($"Address Details:");
+                Console.WriteLine($"State: {addressDetails.State}");
+                Console.WriteLine($"City: {addressDetails.City}");
+                Console.WriteLine($"Neighborhood: {addressDetails.Neighborhood}");
+                Console.WriteLine($"Street: {addressDetails.Street}");
+                Console.WriteLine($"Service: {addressDetails.Service}");
+
+                // Prompt the user to input the price
+                Console.Write("Enter the price: ");
+                if (decimal.TryParse(Console.ReadLine(), out var price))
+                {
+                    // Now you have the address details and the input price
+                    // Perform further processing (e.g., creating a Property object and saving it)
+                    // ...
+
+                    Console.WriteLine("Property added successfully!");
+                    return Ok(); // or return Created, depending on your use case
+                }
+                else
+                {
+                    // Handle invalid price input
+                    return BadRequest("Invalid price input.");
+                }
+            }
+            else
+            {
+                // Handle the case where the API request fails
+                // Return an appropriate error response
+                return BadRequest("Failed to retrieve address details from the external API.");
+            }
         }
 
         [HttpDelete("imovel/{id}", Name = "DeleteProperty")]
@@ -72,6 +103,15 @@ namespace RealState.WebAPI.Controllers
             catch (Exception ex)
             {
                 return NotFound(ex.Message);
+            }
+        }
+
+        private async Task<HttpResponseMessage> GetAddressDetailsAsync(string cep)
+        {
+            using (var client = new HttpClient())
+            {
+                var requestUri = $"https://brasilapi.com.br/api/cep/v1/{cep}";
+                return await client.GetAsync(requestUri);
             }
         }
         private Property ParseToProperty(RequiredPropertyRequest requestProperty)
