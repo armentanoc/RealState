@@ -8,6 +8,7 @@ namespace RealState.Infra
         IEnumerable<Property> GetAllProperties();
         Property GetPropertyById(int id);
         int AddProperty(Property property);
+        void UpdateProperty(Property property);
         void DeleteProperty(int id);
     }
 }

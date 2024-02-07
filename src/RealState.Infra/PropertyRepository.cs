@@ -36,5 +36,20 @@ namespace RealState.Infra
                 throw new IdNotFoundException($"Property with id {id} not found");
             }
         }
+
+        public void UpdateProperty(Property currentProperty)
+        {
+            if (properties.FirstOrDefault(p => p.Id == currentProperty.Id) is Property existingProperty)
+                {
+                existingProperty.Street = currentProperty.Street;
+                existingProperty.City = currentProperty.City;
+                existingProperty.State = currentProperty.State;
+                existingProperty.Price = currentProperty.Price;
+            }
+            else
+            {
+                throw new PropertyNotFoundException($"Property with id {currentProperty.Id} not found");
+            }
+        }
     }
 }

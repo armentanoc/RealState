@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RealState.Application;
 using RealState.Domain;
-using RealState.WebAPI.CustomExceptions;
 
 namespace RealState.WebAPI.Controllers
 {
@@ -10,25 +9,25 @@ namespace RealState.WebAPI.Controllers
     public class RealStateController : ControllerBase
     {
         private readonly ILogger<RealStateController> _logger;
-        private readonly IRealStateService _realStateService;
+        private readonly IPropertyService _propertyService;
 
-        public RealStateController(ILogger<RealStateController> logger, IRealStateService realStateService)
+        public RealStateController(ILogger<RealStateController> logger, IPropertyService propertyService)
         {
             _logger = logger;
-            _realStateService = realStateService;
+            _propertyService = propertyService;
         }
 
         [HttpGet("properties", Name = "GetAllProperties")]
         public ActionResult<IEnumerable<Property>> GetProperties()
         {
-            var allProperties = _realStateService.GetAllProperties();
+            var allProperties = _propertyService.GetAllProperties();
             return Ok(allProperties);
         }
 
         [HttpGet("properties/{id}", Name = "GetPropertyById")]
         public ActionResult<Property> GetPropertyById(int id)
         {
-            if (_realStateService.GetPropertyById(id) is not Property property)
+            if (_propertyService.GetPropertyById(id) is not Property property)
                 return NotFound();
             return Ok(property);
         }
@@ -38,7 +37,7 @@ namespace RealState.WebAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var newId = _realStateService.AddProperty(property);
+            var newId = _propertyService.AddProperty(property);
             return Ok(newId);
         }
 
@@ -47,10 +46,25 @@ namespace RealState.WebAPI.Controllers
         {
             try
             { 
-                _realStateService.DeleteProperty(id);
+                _propertyService.DeleteProperty(id);
                 return NoContent();
             }
-            catch (IdNotFoundException ex)
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        
+        [HttpPut("properties/{id}", Name = "UpdateProperty")]
+        public ActionResult UpdateProperty(int id, [FromForm] Property viewProperty)
+        {
+            try
+            {
+                viewProperty.Id = id;
+                _propertyService.UpdateProperty(viewProperty);
+                return NoContent();
+            }
+            catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }

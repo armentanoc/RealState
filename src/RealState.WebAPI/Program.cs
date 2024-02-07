@@ -20,7 +20,7 @@ namespace RealState.WebAPI
 
             builder.Services.AddControllers();
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
-            builder.Services.AddScoped<IRealStateService, PropertyService>();
+            builder.Services.AddScoped<IPropertyService, PropertyService>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

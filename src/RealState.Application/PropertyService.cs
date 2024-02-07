@@ -3,7 +3,7 @@ using RealState.Infra;
 
 namespace RealState.Application
 {
-    public class PropertyService : IRealStateService
+    public class PropertyService : IPropertyService
     {
         private readonly IPropertyRepository _propertyRepository;
 
@@ -26,6 +26,12 @@ namespace RealState.Application
         {
             return _propertyRepository.AddProperty(property);
         }
+
+        public void UpdateProperty(Property property)
+        {
+            _propertyRepository.UpdateProperty(property);
+        }
+
         public void DeleteProperty(int id)
         {
             _propertyRepository.DeleteProperty(id); ;

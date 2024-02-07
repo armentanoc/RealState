@@ -2,11 +2,12 @@
 
 namespace RealState.Application
 {
-    public interface IRealStateService
+    public interface IPropertyService
     {
         IEnumerable<Property> GetAllProperties();
         Property GetPropertyById(int id);
         int AddProperty(Property property);
+        void UpdateProperty(Property property);
         void DeleteProperty(int id);
     }
 }
