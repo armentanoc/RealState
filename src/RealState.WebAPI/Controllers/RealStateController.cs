@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using RealState.Application;
 using RealState.Domain;
+using RealState.WebAPI.Requests;
+using System.ComponentModel.DataAnnotations;
 
 namespace RealState.WebAPI.Controllers
 {
     [ApiController]
-    //[Route("[controller]")]
     public class RealStateController : ControllerBase
     {
         private readonly ILogger<RealStateController> _logger;
@@ -25,7 +26,7 @@ namespace RealState.WebAPI.Controllers
         }
 
         [HttpGet("imovel/{id}", Name = "GetPropertyById")]
-        public ActionResult<Property> GetPropertyById(int id)
+        public ActionResult<Property> GetPropertyById([FromRoute] int id)
         {
             if (_propertyService.GetPropertyById(id) is not Property property)
                 return NotFound();
@@ -33,16 +34,19 @@ namespace RealState.WebAPI.Controllers
         }
 
         [HttpPost("imovel", Name = "AddProperty")]
-        public ActionResult<int> AddProperty([FromForm] Property property)
+        public ActionResult<int> AddProperty([FromForm][Required] RequiredPropertyRequest requestProperty)
         {
+            var property = ParseToProperty(requestProperty);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
             var newId = _propertyService.AddProperty(property);
-            return Ok(newId);
+            return Created($"imovel/{property.Id}", property);
         }
 
         [HttpDelete("imovel/{id}", Name = "DeleteProperty")]
-        public IActionResult DeleteProperty(int id)
+        public IActionResult DeleteProperty([FromRoute] int id)
         {
             try
             { 
@@ -56,18 +60,29 @@ namespace RealState.WebAPI.Controllers
         }
         
         [HttpPut("imovel/{id}", Name = "UpdateProperty")]
-        public ActionResult UpdateProperty(int id, [FromForm] Property viewProperty)
+        public ActionResult UpdateProperty([FromRoute] int id, [FromForm][Required] RequiredPropertyRequest requestProperty)
         {
             try
             {
-                viewProperty.Id = id;
-                _propertyService.UpdateProperty(viewProperty);
+                Property property = ParseToProperty(requestProperty);
+                property.Id = id;
+                _propertyService.UpdateProperty(property);
                 return NoContent();
             }
             catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }
+        }
+        private Property ParseToProperty(RequiredPropertyRequest requestProperty)
+        {
+            return new Property
+            {
+                Street = requestProperty.Street,
+                City = requestProperty.City,
+                State = requestProperty.State,
+                Price = requestProperty.Price
+            };
         }
     }
 }
