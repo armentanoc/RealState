@@ -1,48 +1,48 @@
-# RealState Web API ??
+# RealState Web API üè°
 
-Bem-vindo ‡ RealState Web API, uma plataforma para gerenciar listagens de propriedades e apoiar corretores imobili·rios! ??
+Bem-vindo √† RealState Web API, uma plataforma para gerenciar listagens de propriedades e apoiar corretores imobili√°rios! 
 
-## Vis„o Geral
+## Vis√£o Geral
 
-A RealState Web API È um serviÁo RESTful construÌdo com C# e ASP.NET Core. Ele fornece funcionalidades para gerenciar uma lista de propriedades, tornando-o um backend ideal para aplicaÁıes imobili·rias.
+A RealState Web API √© um servi√ßo RESTful constru√≠do com C# e ASP.NET Core. Ele fornece funcionalidades para gerenciar uma lista de propriedades, tornando-o um backend ideal para aplica√ß√µes imobili√°rias.
 
 ## Recursos
 
-- **Listar Propriedades**: Obter uma lista de todas as propriedades disponÌveis.
-- **Obter Propriedade por ID**: Obter detalhes de uma propriedade especÌfica usando seu ID.
-- **Adicionar Propriedade**: Adicionar uma nova propriedade ‡ listagem e obter seu ID atribuÌdo.
-- **Atualizar Propriedade**: Modificar informaÁıes para uma propriedade existente.
+- **Listar Propriedades**: Obter uma lista de todas as propriedades dispon√≠veis.
+- **Obter Propriedade por ID**: Obter detalhes de uma propriedade espec√≠fica usando seu ID.
+- **Adicionar Propriedade**: Adicionar uma nova propriedade √† listagem e obter seu ID atribu√≠do.
+- **Atualizar Propriedade**: Modificar informa√ß√µes para uma propriedade existente.
 - **Remover Propriedade**: Excluir uma propriedade da listagem.
 
 ## Endpoints da API
 
 - **GET /propriedades**: Obter todas as propriedades.
-- **GET /propriedades/{id}**: Obter detalhes de uma propriedade especÌfica por ID.
-- **POST /propriedades**: Adicionar uma nova propriedade ‡ listagem.
-- **PUT /propriedades/{id}**: Atualizar informaÁıes para uma propriedade existente.
+- **GET /propriedades/{id}**: Obter detalhes de uma propriedade espec√≠fica por ID.
+- **POST /propriedades**: Adicionar uma nova propriedade √† listagem.
+- **PUT /propriedades/{id}**: Atualizar informa√ß√µes para uma propriedade existente.
 - **DELETE /propriedades/{id}**: Remover uma propriedade da listagem.
 
-## Como ComeÁar
+## Como Come√ßar
 
-1. Clone o repositÛrio:
+1. Clone o reposit√≥rio:
 
-   ```bash
-   git clone https://github.com/armentanoc/RealState.git
-	```
+```
+git clone https://github.com/armentanoc/RealState.git
+```
 
-## Instale as dependÍncias:
+## Instale as depend√™ncias:
 
-	```bash
-	dotnet restore
-	```
+```
+dotnet restore
+```
 
-## Execute a aplicaÁ„o:
+## Execute a aplica√ß√£o:
 
-	```bash
-	dotnet run
-	```
+```
+dotnet run
+```
 
-Acesse a API em http://localhost:5000 por padr„o.
+Acesse a API em http://localhost:5000 por padr√£o. 
 
 ## Uso
 
@@ -50,6 +50,8 @@ Explore a API usando ferramentas como Postman ou Swagger:
 
 Swagger UI: http://localhost:5000/swagger
 
-## ContribuiÁıes
+![Swagger UI](https://github.com/armentanoc/RealState/assets/88147887/d15a0277-4396-44c6-bbb0-d2cd3d443f9e)
 
-Aceitamos contribuiÁıes! Se encontrar um bug ou tiver uma solicitaÁ„o de recurso, por favor, abra uma issue.
+## Contribui√ß√µes
+
+Aceitamos contribui√ß√µes! Se encontrar um bug ou tiver uma solicita√ß√£o de recurso, por favor, abra uma issue.
