@@ -1,7 +1,7 @@
-﻿namespace RealState.WebAPI.Helpers
+﻿namespace RealState.WebAPI.Helpers.Cep
 {
     using Microsoft.OpenApi.Models;
-    using RealState.WebAPI.Requests;
+    using RealState.WebAPI.Helpers.Requests;
     using Swashbuckle.AspNetCore.SwaggerGen;
     using System.Collections.Generic;
 

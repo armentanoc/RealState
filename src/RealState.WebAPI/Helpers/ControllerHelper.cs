@@ -1,10 +1,10 @@
 ﻿using RealState.Domain;
 using RealState.WebAPI.Requests.RealState.WebAPI.Requests;
-using RealState.WebAPI.Requests;
+using RealState.WebAPI.Helpers.Requests;
 
 namespace RealState.WebAPI.Helpers
 {
-    public class PropertyHelper
+    public class ControllerHelper
     {
         internal static Property ParseToProperty(RequiredPropertyRequest requestProperty)
         {

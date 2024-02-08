@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using RealState.Application;
 using RealState.Domain;
 using RealState.WebAPI.Helpers;
-using RealState.WebAPI.Requests;
+using RealState.WebAPI.Helpers.Cep;
+using RealState.WebAPI.Helpers.Requests;
 using RealState.WebAPI.Requests.RealState.WebAPI.Requests;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
@@ -49,7 +50,7 @@ namespace RealState.WebAPI.Controllers
                 if (addressResponse.IsSuccessStatusCode)
                 {
                     var addressDetails = await addressResponse.Content.ReadFromJsonAsync<AddressDetailsResponse>();
-                    var property = PropertyHelper.ParseToProperty(addressDetails, price);
+                    var property = ControllerHelper.ParseToProperty(addressDetails, price);
                     _propertyService.AddProperty(property);
                     return CreatedAtAction(nameof(AddProperty), new { id = property.Id }, property);
                 }
@@ -71,7 +72,7 @@ namespace RealState.WebAPI.Controllers
         {
             try
             {
-                var property = PropertyHelper.ParseToProperty(requestProperty);
+                var property = ControllerHelper.ParseToProperty(requestProperty);
                 _propertyService.AddProperty(property);
                 return CreatedAtAction(nameof(AddProperty), new { id = property.Id }, property);
             }
@@ -105,7 +106,7 @@ namespace RealState.WebAPI.Controllers
             try
             {
                 var property = _propertyService.GetPropertyById(id);
-                property = PropertyHelper.ParseToProperty(requestProperty, id);
+                property = ControllerHelper.ParseToProperty(requestProperty, id);
                 _propertyService.UpdateProperty(property);
                 return Ok(property);
             }

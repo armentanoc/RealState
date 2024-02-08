@@ -2,7 +2,7 @@
 using Swashbuckle.AspNetCore.Filters;
 
 
-namespace RealState.WebAPI.Requests
+namespace RealState.WebAPI.Helpers.Requests
 {
     public class RequiredPropertyRequestExample : IExamplesProvider<RequiredPropertyRequest>
     {

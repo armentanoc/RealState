@@ -1,4 +1,4 @@
-﻿namespace RealState.WebAPI.Helpers
+﻿namespace RealState.WebAPI.Helpers.Cep
 {
     public class CepApiHelper
     {

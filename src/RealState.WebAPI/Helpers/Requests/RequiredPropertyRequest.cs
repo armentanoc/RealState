@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RealState.WebAPI.Requests
+namespace RealState.WebAPI.Helpers.Requests
 {
-    public class RequiredPropertyRequest {
+    public class RequiredPropertyRequest
+    {
 
         [Required(ErrorMessage = "Cep is required")]
         public string Cep { get; set; }

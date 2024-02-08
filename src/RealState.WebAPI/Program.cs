@@ -1,7 +1,7 @@
 
 using RealState.Application;
 using RealState.Infra;
-using RealState.WebAPI.Helpers;
+using RealState.WebAPI.Helpers.Cep;
 
 namespace RealState.WebAPI
 {
