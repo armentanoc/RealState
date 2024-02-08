@@ -1,6 +1,5 @@
 ﻿
 using RealState.Domain;
-using RealState.WebAPI.CustomExceptions;
 
 namespace RealState.Infra
 {
@@ -11,7 +10,7 @@ namespace RealState.Infra
 
         public IEnumerable<Property> GetAllProperties()
         {
-            return properties.ToList(); 
+            return properties.ToList();
         }
 
         public Property GetPropertyById(int id)
@@ -19,7 +18,7 @@ namespace RealState.Infra
             if (properties.FirstOrDefault(p => p.Id == id) is Property property)
                 return property;
             else
-                throw new IdNotFoundException($"Property with id {id} not found");
+                return null;
         }
 
         public int AddProperty(Property property)
@@ -37,20 +36,13 @@ namespace RealState.Infra
 
         public void UpdateProperty(Property newProperty)
         {
-            try
-            {
-                var existingProperty = GetPropertyById(newProperty.Id);
-                existingProperty.Cep = newProperty.Cep;
-                existingProperty.State = newProperty.State;
-                existingProperty.City = newProperty.City;
-                existingProperty.Neighborhood = newProperty.Neighborhood;
-                existingProperty.Street = newProperty.Street;
-                existingProperty.Price = newProperty.Price;
-            }
-            catch 
-            {
-                throw new Exception($"We couldn't update property {newProperty.Id}");
-            }
+            var existingProperty = GetPropertyById(newProperty.Id);
+            existingProperty.Cep = newProperty.Cep;
+            existingProperty.State = newProperty.State;
+            existingProperty.City = newProperty.City;
+            existingProperty.Neighborhood = newProperty.Neighborhood;
+            existingProperty.Street = newProperty.Street;
+            existingProperty.Price = newProperty.Price;
         }
     }
 }

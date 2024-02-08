@@ -2,6 +2,7 @@
 using RealState.Application;
 using RealState.Infra;
 using RealState.WebAPI.Helpers.Cep;
+using RealState.WebAPI.Middlewares;
 
 namespace RealState.WebAPI
 {
@@ -22,6 +23,9 @@ namespace RealState.WebAPI
             builder.Services.AddControllers();
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
+
+            // ILogger
+            builder.Services.AddLogging();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -48,6 +52,7 @@ namespace RealState.WebAPI
 
             app.UseAuthorization();
 
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.MapControllers();
 
