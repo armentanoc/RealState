@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using RealState.Application;
 using RealState.Domain;
+using RealState.WebAPI.Helpers;
 using RealState.WebAPI.Requests;
 using RealState.WebAPI.Requests.RealState.WebAPI.Requests;
+using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 
 namespace RealState.WebAPI.Controllers
@@ -19,14 +21,16 @@ namespace RealState.WebAPI.Controllers
             _propertyService = propertyService;
         }
 
-        [HttpGet("imovel", Name = "GetAllProperties")]
+        [HttpGet("imovel")]
+        [SwaggerOperation("Get all properties")]
         public ActionResult<IEnumerable<Property>> GetProperties()
         {
             var allProperties = _propertyService.GetAllProperties();
             return Ok(allProperties);
         }
 
-        [HttpGet("imovel/{id}", Name = "GetPropertyById")]
+        [HttpGet("imovel/{id}")]
+        [SwaggerOperation("Get a property by ID")]
         public ActionResult<Property> GetPropertyById([FromRoute] int id)
         {
             if (_propertyService.GetPropertyById(id) is not Property property)
@@ -34,95 +38,82 @@ namespace RealState.WebAPI.Controllers
             return Ok(property);
         }
 
-        [HttpPost("imovel", Name = "AddProperty")]
-        public async Task<ActionResult<int>> AddProperty([FromForm][Required] string cep)
+        [HttpPost("imovel")]
+        [SwaggerOperation("Add a property by CEP and Price")]
+        public async Task<ActionResult<int>> AddProperty([FromForm][Required] string cep, [FromForm][Required] decimal price)
         {
-            var addressResponse = await GetAddressDetailsAsync(cep);
-
-            if (addressResponse.IsSuccessStatusCode)
+            try
             {
-                var addressDetails = await addressResponse.Content.ReadFromJsonAsync<AddressDetailsResponse>();
+                var addressResponse = await CepApiHelper.GetAddressDetailsAsync(cep);
 
-                // Display the address details to the user
-                Console.WriteLine($"Address Details:");
-                Console.WriteLine($"State: {addressDetails.State}");
-                Console.WriteLine($"City: {addressDetails.City}");
-                Console.WriteLine($"Neighborhood: {addressDetails.Neighborhood}");
-                Console.WriteLine($"Street: {addressDetails.Street}");
-                Console.WriteLine($"Service: {addressDetails.Service}");
-
-                // Prompt the user to input the price
-                Console.Write("Enter the price: ");
-                if (decimal.TryParse(Console.ReadLine(), out var price))
+                if (addressResponse.IsSuccessStatusCode)
                 {
-                    // Now you have the address details and the input price
-                    // Perform further processing (e.g., creating a Property object and saving it)
-                    // ...
-
-                    Console.WriteLine("Property added successfully!");
-                    return Ok(); // or return Created, depending on your use case
+                    var addressDetails = await addressResponse.Content.ReadFromJsonAsync<AddressDetailsResponse>();
+                    var property = PropertyHelper.ParseToProperty(addressDetails, price);
+                    _propertyService.AddProperty(property);
+                    return CreatedAtAction(nameof(AddProperty), new { id = property.Id }, property);
                 }
                 else
                 {
-                    // Handle invalid price input
-                    return BadRequest("Invalid price input.");
+                    return BadRequest("Failed to retrieve address details from the external CEP API.");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                // Handle the case where the API request fails
-                // Return an appropriate error response
-                return BadRequest("Failed to retrieve address details from the external API.");
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, "Internal Server Error");
             }
         }
 
-        [HttpDelete("imovel/{id}", Name = "DeleteProperty")]
+        [HttpPost("imovel/without_cep")]
+        [SwaggerOperation("Add a property by full address and price")]
+        public ActionResult AddPropertyWithoutCep([FromForm][Required] RequiredPropertyRequest requestProperty)
+        {
+            try
+            {
+                var property = PropertyHelper.ParseToProperty(requestProperty);
+                _propertyService.AddProperty(property);
+                return CreatedAtAction(nameof(AddProperty), new { id = property.Id }, property);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
+        [HttpDelete("imovel/{id}")]
+        [SwaggerOperation("Delete a property by ID")]
         public IActionResult DeleteProperty([FromRoute] int id)
         {
             try
-            { 
+            {
                 _propertyService.DeleteProperty(id);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
-            }
-        }
-        
-        [HttpPut("imovel/{id}", Name = "UpdateProperty")]
-        public ActionResult UpdateProperty([FromRoute] int id, [FromForm][Required] RequiredPropertyRequest requestProperty)
-        {
-            try
-            {
-                Property property = ParseToProperty(requestProperty);
-                property.Id = id;
-                _propertyService.UpdateProperty(property);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, "Internal Server Error");
             }
         }
 
-        private async Task<HttpResponseMessage> GetAddressDetailsAsync(string cep)
+        [HttpPut("imovel/{id}")]
+        [SwaggerOperation("Update a property by ID")]
+        public ActionResult UpdateProperty([FromRoute] int id, [FromBody][Required] RequiredPropertyRequest requestProperty)
         {
-            using (var client = new HttpClient())
+            try
             {
-                var requestUri = $"https://brasilapi.com.br/api/cep/v1/{cep}";
-                return await client.GetAsync(requestUri);
+                var property = _propertyService.GetPropertyById(id);
+                property = PropertyHelper.ParseToProperty(requestProperty, id);
+                _propertyService.UpdateProperty(property);
+                return Ok(property);
             }
-        }
-        private Property ParseToProperty(RequiredPropertyRequest requestProperty)
-        {
-            return new Property
+            catch (Exception ex)
             {
-                Street = requestProperty.Street,
-                City = requestProperty.City,
-                State = requestProperty.State,
-                Price = requestProperty.Price
-            };
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, $"Internal Server Error - {ex.Message}");
+            }
         }
     }
 }

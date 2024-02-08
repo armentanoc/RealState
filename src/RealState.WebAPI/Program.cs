@@ -1,6 +1,7 @@
 
 using RealState.Application;
 using RealState.Infra;
+using RealState.WebAPI.Helpers;
 
 namespace RealState.WebAPI
 {
@@ -25,8 +26,10 @@ namespace RealState.WebAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
-                    c.OperationFilter<CepOperationFilter>()
-                );
+            {
+                c.OperationFilter<CepOperationFilter>();
+                c.EnableAnnotations();
+            });
 
             var app = builder.Build();
 

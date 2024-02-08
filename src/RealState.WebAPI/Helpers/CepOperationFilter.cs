@@ -1,4 +1,4 @@
-﻿namespace RealState.WebAPI
+﻿namespace RealState.WebAPI.Helpers
 {
     using Microsoft.OpenApi.Models;
     using RealState.WebAPI.Requests;
@@ -9,9 +9,9 @@
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (context.MethodInfo.Name == "AddProperty" && context.ApiDescription.RelativePath == "/imovel")
+            if (context.MethodInfo.Name is "AddProperty" && context.ApiDescription.RelativePath == "/imovel")
             {
-                
+
                 operation.Parameters.Add(new OpenApiParameter
                 {
                     Name = "cep",
@@ -21,6 +21,19 @@
                     Schema = new OpenApiSchema
                     {
                         Type = "string"
+                    }
+                });
+
+                operation.Parameters.Add(new OpenApiParameter
+                {
+                    Name = "price",
+                    In = ParameterLocation.Query,
+                    Required = true,
+                    Description = "Price of the property",
+                    Schema = new OpenApiSchema
+                    {
+                        Type = "number",
+                        Format = "decimal"
                     }
                 });
 
