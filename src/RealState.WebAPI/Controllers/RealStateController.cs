@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using RealState.Application;
 using RealState.Domain;
+using RealState.WebAPI.Helpers;
+using RealState.WebAPI.Requests;
+using RealState.WebAPI.Requests.RealState.WebAPI.Requests;
+using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace RealState.WebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class RealStateController : ControllerBase
     {
         private readonly ILogger<RealStateController> _logger;
@@ -17,56 +21,98 @@ namespace RealState.WebAPI.Controllers
             _propertyService = propertyService;
         }
 
-        [HttpGet("properties", Name = "GetAllProperties")]
+        [HttpGet("imovel")]
+        [SwaggerOperation("Get all properties")]
         public ActionResult<IEnumerable<Property>> GetProperties()
         {
             var allProperties = _propertyService.GetAllProperties();
             return Ok(allProperties);
         }
 
-        [HttpGet("properties/{id}", Name = "GetPropertyById")]
-        public ActionResult<Property> GetPropertyById(int id)
+        [HttpGet("imovel/{id}")]
+        [SwaggerOperation("Get a property by ID")]
+        public ActionResult<Property> GetPropertyById([FromRoute] int id)
         {
             if (_propertyService.GetPropertyById(id) is not Property property)
                 return NotFound();
             return Ok(property);
         }
 
-        [HttpPost("properties", Name = "AddProperty")]
-        public ActionResult<int> AddProperty([FromForm] Property property)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var newId = _propertyService.AddProperty(property);
-            return Ok(newId);
-        }
-
-        [HttpDelete("properties/{id}", Name = "DeleteProperty")]
-        public IActionResult DeleteProperty(int id)
+        [HttpPost("imovel")]
+        [SwaggerOperation("Add a property by CEP and Price")]
+        public async Task<ActionResult<int>> AddProperty([FromForm][Required] string cep, [FromForm][Required] decimal price)
         {
             try
-            { 
+            {
+                var addressResponse = await CepApiHelper.GetAddressDetailsAsync(cep);
+
+                if (addressResponse.IsSuccessStatusCode)
+                {
+                    var addressDetails = await addressResponse.Content.ReadFromJsonAsync<AddressDetailsResponse>();
+                    var property = PropertyHelper.ParseToProperty(addressDetails, price);
+                    _propertyService.AddProperty(property);
+                    return CreatedAtAction(nameof(AddProperty), new { id = property.Id }, property);
+                }
+                else
+                {
+                    return BadRequest("Failed to retrieve address details from the external CEP API.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
+        [HttpPost("imovel/without_cep")]
+        [SwaggerOperation("Add a property by full address and price")]
+        public ActionResult AddPropertyWithoutCep([FromForm][Required] RequiredPropertyRequest requestProperty)
+        {
+            try
+            {
+                var property = PropertyHelper.ParseToProperty(requestProperty);
+                _propertyService.AddProperty(property);
+                return CreatedAtAction(nameof(AddProperty), new { id = property.Id }, property);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
+        [HttpDelete("imovel/{id}")]
+        [SwaggerOperation("Delete a property by ID")]
+        public IActionResult DeleteProperty([FromRoute] int id)
+        {
+            try
+            {
                 _propertyService.DeleteProperty(id);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, "Internal Server Error");
             }
         }
-        
-        [HttpPut("properties/{id}", Name = "UpdateProperty")]
-        public ActionResult UpdateProperty(int id, [FromForm] Property viewProperty)
+
+        [HttpPut("imovel/{id}")]
+        [SwaggerOperation("Update a property by ID")]
+        public ActionResult UpdateProperty([FromRoute] int id, [FromBody][Required] RequiredPropertyRequest requestProperty)
         {
             try
             {
-                viewProperty.Id = id;
-                _propertyService.UpdateProperty(viewProperty);
-                return NoContent();
+                var property = _propertyService.GetPropertyById(id);
+                property = PropertyHelper.ParseToProperty(requestProperty, id);
+                _propertyService.UpdateProperty(property);
+                return Ok(property);
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, $"Internal Server Error - {ex.Message}");
             }
         }
     }

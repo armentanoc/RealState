@@ -16,7 +16,10 @@ namespace RealState.Infra
 
         public Property GetPropertyById(int id)
         {
-            return properties.FirstOrDefault(p => p.Id == id);
+            if (properties.FirstOrDefault(p => p.Id == id) is Property property)
+                return property;
+            else
+                throw new IdNotFoundException($"Property with id {id} not found");
         }
 
         public int AddProperty(Property property)
@@ -28,27 +31,25 @@ namespace RealState.Infra
 
         public void DeleteProperty(int id)
         {
-            if (properties.FirstOrDefault(p => p.Id == id) is Property property)
-            {
-                properties.Remove(property);
-            } else
-            {
-                throw new IdNotFoundException($"Property with id {id} not found");
-            }
+            var property = GetPropertyById(id);
+            properties.Remove(property);
         }
 
-        public void UpdateProperty(Property currentProperty)
+        public void UpdateProperty(Property newProperty)
         {
-            if (properties.FirstOrDefault(p => p.Id == currentProperty.Id) is Property existingProperty)
-                {
-                existingProperty.Street = currentProperty.Street;
-                existingProperty.City = currentProperty.City;
-                existingProperty.State = currentProperty.State;
-                existingProperty.Price = currentProperty.Price;
-            }
-            else
+            try
             {
-                throw new PropertyNotFoundException($"Property with id {currentProperty.Id} not found");
+                var existingProperty = GetPropertyById(newProperty.Id);
+                existingProperty.Cep = newProperty.Cep;
+                existingProperty.State = newProperty.State;
+                existingProperty.City = newProperty.City;
+                existingProperty.Neighborhood = newProperty.Neighborhood;
+                existingProperty.Street = newProperty.Street;
+                existingProperty.Price = newProperty.Price;
+            }
+            catch 
+            {
+                throw new Exception($"We couldn't update property {newProperty.Id}");
             }
         }
     }

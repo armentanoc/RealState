@@ -1,6 +1,7 @@
 
 using RealState.Application;
 using RealState.Infra;
+using RealState.WebAPI.Helpers;
 
 namespace RealState.WebAPI
 {
@@ -24,7 +25,11 @@ namespace RealState.WebAPI
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.OperationFilter<CepOperationFilter>();
+                c.EnableAnnotations();
+            });
 
             var app = builder.Build();
 
@@ -32,7 +37,11 @@ namespace RealState.WebAPI
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "RealState Web API v1");
+                    c.RoutePrefix = "swagger";
+                });
             }
 
             app.UseHttpsRedirection();

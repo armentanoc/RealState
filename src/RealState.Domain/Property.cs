@@ -1,22 +1,14 @@
 ﻿
-using System.ComponentModel.DataAnnotations;
-
 namespace RealState.Domain
 {
     public class Property
     {
-        public int? Id { get; set; }
-
-        [Required(ErrorMessage = "Street is required")]
-        public string Street { get; set; }
-
-        [Required(ErrorMessage = "City is required")]
-        public string City { get; set; }
-
-        [Required(ErrorMessage = "State is required")]
+        public int Id { get; set; }
+        public string Cep { get; set; }
         public string State { get; set; }
-
-        [Required(ErrorMessage = "Price is required")]
+        public string City { get; set; }
+        public string Neighborhood { get; set; }
+        public string Street { get; set; }
         public decimal Price { get; set; }
     }
 }
