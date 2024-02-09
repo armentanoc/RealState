@@ -1,6 +1,7 @@
 
 using RealState.Application;
 using RealState.Infra;
+using RealState.WebAPI.Errors;
 using RealState.WebAPI.Helpers.Cep;
 
 namespace RealState.WebAPI
@@ -23,6 +24,9 @@ namespace RealState.WebAPI
             builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
 
+            // ILogger
+            builder.Services.AddLogging();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -32,6 +36,9 @@ namespace RealState.WebAPI
             });
 
             var app = builder.Build();
+
+            //Error Custom Middleware
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -47,7 +54,6 @@ namespace RealState.WebAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
