@@ -10,17 +10,11 @@ A RealState Web API é um serviço RESTful construído com C# e ASP.NET Core. El
 
 - **Listar Propriedades**: Obter uma lista de todas as propriedades disponíveis.
 - **Obter Propriedade por ID**: Obter detalhes de uma propriedade específica usando seu ID.
-- **Adicionar Propriedade**: Adicionar uma nova propriedade à listagem e obter seu ID atribuído.
+- **Adicionar Propriedade**:
+  - Adicionar uma nova propriedade à listagem através do CEP e preço, coletando o endereço no Backend através da API CEP Brasil.
+  - Adicionar uma nova propriedade à listagem através do preenchimento de todos os campos.
 - **Atualizar Propriedade**: Modificar informações para uma propriedade existente.
 - **Remover Propriedade**: Excluir uma propriedade da listagem.
-
-## Endpoints da API
-
-- **GET /propriedades**: Obter todas as propriedades.
-- **GET /propriedades/{id}**: Obter detalhes de uma propriedade específica por ID.
-- **POST /propriedades**: Adicionar uma nova propriedade à listagem.
-- **PUT /propriedades/{id}**: Atualizar informações para uma propriedade existente.
-- **DELETE /propriedades/{id}**: Remover uma propriedade da listagem.
 
 ## Como Começar
 
@@ -50,7 +44,7 @@ Explore a API usando ferramentas como Postman ou Swagger:
 
 Swagger UI: http://localhost:5000/swagger
 
-![Swagger UI](https://github.com/armentanoc/RealState/assets/88147887/d15a0277-4396-44c6-bbb0-d2cd3d443f9e)
+![image](https://github.com/armentanoc/RealState/assets/88147887/75aac7f7-c73b-439d-8df8-2c5586a21b5e)
 
 ## Contribuições
 
