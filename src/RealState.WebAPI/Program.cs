@@ -1,8 +1,8 @@
 
 using RealState.Application;
 using RealState.Infra;
+using RealState.WebAPI.Errors;
 using RealState.WebAPI.Helpers.Cep;
-using RealState.WebAPI.Middlewares;
 
 namespace RealState.WebAPI
 {
@@ -37,6 +37,9 @@ namespace RealState.WebAPI
 
             var app = builder.Build();
 
+            //Error Custom Middleware
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -51,8 +54,6 @@ namespace RealState.WebAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.MapControllers();
 

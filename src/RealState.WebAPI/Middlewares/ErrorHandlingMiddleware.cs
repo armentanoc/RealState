@@ -1,8 +1,9 @@
 ﻿
 using System.Text.Json;
 using System.Net;
+using System;
 
-namespace RealState.WebAPI.Middlewares
+namespace RealState.WebAPI.Errors
 {
     public class ErrorHandlingMiddleware
     {
@@ -12,7 +13,7 @@ namespace RealState.WebAPI.Middlewares
         public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
         {
             this.next = next;
-            this._logger = logger;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -27,13 +28,12 @@ namespace RealState.WebAPI.Middlewares
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception, HttpStatusCode code)
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode code)
         {
-            _logger.LogError(exception, "Exception caught in middleware");
-            var result = JsonSerializer.Serialize(new { error = exception.Message });
+            _logger.LogError(ex, "Exception caught in middleware");
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
-            await context.Response.WriteAsync(result);
+            await context.Response.WriteAsJsonAsync(new { ErrorMessage = ex.Message });
         }
     }
 }
